@@ -28,7 +28,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.example.wenda.model.User;
 import com.example.wenda.service.SettingService;
 
-@Controller
+//@Controller
 public class IndexController {
 	@Autowired
 	private SettingService settingService;
