@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import com.example.wenda.dao.QuestionDAO;
 import com.example.wenda.model.Question;
@@ -12,6 +13,20 @@ import com.example.wenda.model.Question;
 public class QuestionService {
 	@Autowired
 	private QuestionDAO questionDAO;
+	@Autowired
+	private SensitiveService sensitiveService;
+	
+	public int addQuestion(Question question) {
+		
+		//html过滤
+		question.setContent(HtmlUtils.htmlEscape(question.getContent()));
+		question.setTitle(HtmlUtils.htmlEscape(question.getTitle()));
+		//敏感词过滤
+		question.setContent(sensitiveService.filter(question.getContent()));
+		question.setTitle(sensitiveService.filter(question.getTitle()));
+		
+		return questionDAO.addQuestion(question) > 0 ? question.getId() : 0;
+	}
 	
 	public List<Question> getLatestQuestions(int userId,int offset,int limit){
 		return questionDAO.selectLatestQuestions(userId, offset, limit);
@@ -19,5 +34,9 @@ public class QuestionService {
 	
 	public Question getQuestionByid(int id) {
 		return questionDAO.selectQuestionByid(id);
+	}
+	
+	public Question selectById(int id) {
+		return questionDAO.selectByid(id);
 	}
 }
