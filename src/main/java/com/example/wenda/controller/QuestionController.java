@@ -1,6 +1,8 @@
 package com.example.wenda.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +15,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.wenda.model.Comment;
+import com.example.wenda.model.EntityType;
 import com.example.wenda.model.HostHolder;
 import com.example.wenda.model.Question;
+import com.example.wenda.model.ViewObject;
+import com.example.wenda.service.CommentService;
 import com.example.wenda.service.QuestionService;
 import com.example.wenda.service.UserService;
 import com.example.wenda.util.WendaUtil;
@@ -27,11 +33,13 @@ public class QuestionController {
 	
 	
 	@Autowired
-	QuestionService questionService;
+	private QuestionService questionService;
 	@Autowired
-	HostHolder hostHolder;
+	private HostHolder hostHolder;
 	@Autowired
-	UserService userService;
+	private UserService userService;
+	@Autowired
+	private CommentService commentService;
 	
 	@RequestMapping(value = "/question/add", method = {RequestMethod.POST})
 	@ResponseBody
@@ -64,7 +72,16 @@ public class QuestionController {
 	public String questionDetail(Model model, @PathVariable("qid") int qid) {
 		Question question = questionService.selectById(qid);
 		model.addAttribute("question", question);
-		model.addAttribute("user",userService.getUser(question.getUserId()));
+		
+		List<Comment> commentList = commentService.getCommentsByEntity(qid, EntityType.ENTITY_QUESTION);
+		List<ViewObject> vos = new ArrayList<ViewObject>();
+		for(Comment comment : commentList) {
+			ViewObject vo = new ViewObject();
+            vo.set("comment", comment);
+            vo.set("user", userService.getUser(comment.getUserId()));
+            vos.add(vo);
+		}
+		model.addAttribute("comments", vos);
 		return "detail";
 	}
 	
