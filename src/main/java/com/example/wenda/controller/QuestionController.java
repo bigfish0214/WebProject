@@ -25,6 +25,8 @@ import com.example.wenda.service.LikeService;
 import com.example.wenda.service.QuestionService;
 import com.example.wenda.service.UserService;
 import com.example.wenda.util.WendaUtil;
+import com.example.wenda.service.FollowService;
+import com.example.wenda.model.User;
 
 @Controller
 public class QuestionController {
@@ -43,6 +45,8 @@ public class QuestionController {
 	private CommentService commentService;
 	@Autowired
 	private LikeService likeService;
+	@Autowired
+    FollowService followService;
 	
 	
 	@RequestMapping(value = "/question/add", method = {RequestMethod.POST})
@@ -93,6 +97,30 @@ public class QuestionController {
             vos.add(vo);
 		}
 		model.addAttribute("comments", vos);
+		
+		
+		List<ViewObject> followUsers = new ArrayList<ViewObject>();
+        // 获取关注的用户信息
+        List<Integer> users = followService.getFollowers(EntityType.ENTITY_QUESTION, qid, 20);
+        for (Integer userId : users) {
+            ViewObject vo = new ViewObject();
+            User u = userService.getUser(userId);
+            if (u == null) {
+                continue;
+            }
+            vo.set("name", u.getName());
+            vo.set("headUrl", u.getHeadUrl());
+            vo.set("id", u.getId());
+            followUsers.add(vo);
+        }
+        model.addAttribute("followUsers", followUsers);
+        if (hostHolder.getUser() != null) {
+            model.addAttribute("followed", followService.isFollower(hostHolder.getUser().getId(), EntityType.ENTITY_QUESTION, qid));
+        } else {
+            model.addAttribute("followed", false);
+        }
+
+		
 		return "detail";
 	}
 	

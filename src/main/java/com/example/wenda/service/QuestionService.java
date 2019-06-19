@@ -16,6 +16,10 @@ public class QuestionService {
 	@Autowired
 	private SensitiveService sensitiveService;
 	
+	public Question getById(int id) {
+        return questionDAO.getById(id);
+    }
+	
 	public int addQuestion(Question question) {
 		
 		//html过滤

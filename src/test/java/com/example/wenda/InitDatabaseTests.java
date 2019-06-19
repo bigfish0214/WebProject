@@ -15,6 +15,8 @@ import com.example.wenda.dao.QuestionDAO;
 import com.example.wenda.dao.UserDAO;
 import com.example.wenda.model.Question;
 import com.example.wenda.model.User;
+import com.example.wenda.service.FollowService;
+import com.example.wenda.model.EntityType;
 
 
 
@@ -27,6 +29,9 @@ public class InitDatabaseTests {
 	UserDAO userDAO;
 	@Autowired
 	QuestionDAO questionDAO;
+	@Autowired
+	FollowService followService;
+	
 	@Test
 	public void initDatabase() {
 		Random random = new Random();
@@ -37,6 +42,12 @@ public class InitDatabaseTests {
             user.setPassword("");
             user.setSalt("");
             userDAO.addUser(user);
+            
+            for (int j = 1; j < i; ++j) {
+                followService.follow(j, EntityType.ENTITY_USER, i);
+            }
+
+            
             user.setPassword("xx");
             userDAO.updatePassword(user);
             
