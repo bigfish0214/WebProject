@@ -293,9 +293,9 @@ public class MultiThreadTests {
 			@Override
 			public Integer call() throws Exception {
 				// TODO Auto-generated method stub
-//				Thread.sleep(1000);
-//				return 1;
-				throw new IllegalArgumentException("异常");
+				Thread.sleep(1000);
+				return 1;
+//				throw new IllegalArgumentException("异常");
 			}
 		});
 		
@@ -311,6 +311,8 @@ public class MultiThreadTests {
 	}
 	
 	public static void main(String[] args) {
+//		testThread();
+//		testBlockingQueue();
 //		testThreadLocal();
 //		testExecutor();
 //		testAtomic();
